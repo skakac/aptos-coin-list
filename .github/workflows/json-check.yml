@@ -2,18 +2,32 @@ name: Json-check
 
 on:
   push:
-    branches-ignore: [master]
+    branches: [master]
   pull_request:
     branches: [master]
 
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+      - name: Get Time
+        id: time
+        uses: nanzm/get-time-action@v1.1
+        with:
+          timeZone: 0
+          format: "YYYY-MM-DDTHH:mm:ss.sssZ"
+
+      - name: Update timestamp
+        uses: jossef/action-set-json-field@v2
+        with:
+          file: coinlist.json
+          field: timestamp
+          value: "${{ steps.time.outputs.time }}"
 
       - name: Lint Code Base
         uses: github/super-linter@v4
